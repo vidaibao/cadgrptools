@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<MulProperties xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <!-- Đây là một chú thích cho phần tử name -->
+  <Name>Alice</Name>
+  <Age>25</Age>
+</MulProperties>
