@@ -1,8 +1,12 @@
-﻿using System;
+﻿using Autodesk.AutoCAD.ApplicationServices;
+using Autodesk.AutoCAD.EditorInput;
+using CADDB;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace cadgrptools
@@ -25,6 +29,37 @@ namespace cadgrptools
             Option = option;
             Comment = comment;
         }
+
+
+        public static MulConfig ReadXml()
+        {
+            
+            int opt = 0;
+            string cmt = "";
+
+            XmlTextReader xtr = new XmlTextReader("cadgrpproperties.xml");
+            while (xtr.Read()) // read next node from the stream
+            {
+
+                if (xtr.NodeType == XmlNodeType.Element && xtr.Name == "Option")
+                {
+                    opt = int.Parse(xtr.ReadElementString()); // read a text only element
+                    //ed.WriteMessage("\nOption = " + opt);
+                }
+                if (xtr.NodeType == XmlNodeType.Element && xtr.Name == "Comment")
+                {
+                    cmt = xtr.ReadElementString();
+                    //ed.WriteMessage("\nComment = " + cmt);
+                }
+
+            }
+
+            return new MulConfig(opt, cmt);
+
+            
+        }
+
+
 
         public void SerializeToXml(string filePath)
         {

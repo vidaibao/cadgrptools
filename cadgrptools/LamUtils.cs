@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Net;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
@@ -9,6 +7,8 @@ using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Runtime;
 using CADDB;
 
+using Microsoft.VisualBasic;
+
 namespace cadgrptools
 {
     public class LamUtils
@@ -16,13 +16,25 @@ namespace cadgrptools
         [CommandMethod("mul")]
         public static void Draw9lines()
         {
-            // Read properties
-            //PropertyControl.MulWriteProperties();
-
-
 
             Document doc = Application.DocumentManager.MdiActiveDocument;
             Editor ed = doc.Editor;
+
+            // Read properties
+            //PropertyControl.MulWriteProperties();
+            MulConfig mulConfig = XmlData.ReadXml();
+
+            if (mulConfig.option < 1 || mulConfig.option > 3)
+            {
+                ed.WriteMessage("\nCould not get option value from cadgrpproperties.xml");
+                return;
+            }
+            else
+            {
+                ed.WriteMessage($"\nOption default value is: {mulConfig.option}");
+                ed.WriteMessage($"\nOption description: {mulConfig.comment}");
+            }
+            
 
             // get 2 points from acad model screen
             PromptPointOptions basePO = new PromptPointOptions("\nPick the start point:");
@@ -45,15 +57,17 @@ namespace cadgrptools
 
 
             // get profile of beam, gear from editor command prompt
-            string profile = "";
-            PromptStringOptions pso = new PromptStringOptions("\nEnter profile (format SH-800X300X16X32 or 800X300x16x32):");
-            PromptResult pr = ed.GetString(pso);
-            if(pr.Status != PromptStatus.OK)
-            {
-                ed.WriteMessage("\nCould not get profile!");
-                return; 
-            }
-            profile = pr.StringResult;
+            string profile = Interaction.InputBox("Enter profile (format SH- 800X300 X16 X32 or 800X300x16x32)", "Profile");
+            
+            
+            //PromptStringOptions pso = new PromptStringOptions("\nEnter profile (format SH- 800X300 X16 X32 or 800X300x16x32):");
+            //PromptResult pr = ed.GetString(pso);
+            //if(pr.Status != PromptStatus.OK)
+            //{
+            //    ed.WriteMessage("\nCould not get profile!");
+            //    return; 
+            //}
+            //profile = pr.StringResult;
             // ed.WriteMessage(profile);
             // get HBtf    H-800X300 X16X32
             var HBtf = GetProfile(profile);
@@ -181,6 +195,7 @@ namespace cadgrptools
         }
 
 
+       
 
 
 

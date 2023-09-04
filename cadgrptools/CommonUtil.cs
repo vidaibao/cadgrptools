@@ -9,6 +9,19 @@ using Autodesk.AutoCAD.Geometry;
 
 namespace CADDB
 {
+
+    public class MulConfig
+    {
+        public int option { get;  }
+        public string comment { get;  }
+
+        public MulConfig(int option, string comment)
+        {
+            this.option = option;
+            this.comment = comment;
+        }
+    }
+
     public static class CommonUtil
     {
 

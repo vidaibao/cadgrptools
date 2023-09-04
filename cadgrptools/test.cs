@@ -9,12 +9,32 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 
+using System.Configuration;
+using CADDB;
+
 namespace cadgrptools
 {
     public class test
     {
 
-        [CommandMethod("readXML")]
+        [CommandMethod("mconfig")]  // not work cause .net 3.5 
+        public static void ReadConfigurationFile()
+        {
+            Document doc = Application.DocumentManager.MdiActiveDocument;
+            Editor ed = doc.Editor;
+
+            var option = ConfigurationManager.AppSettings["option"];
+            //var comment = ConfigurationManager.AppSettings["comment"];
+
+            ed.WriteMessage($"\nOption : {option}");
+            ed.WriteMessage($"\nComment : {ConfigurationManager.AppSettings["comment"]}");
+        }
+
+
+
+
+
+        [CommandMethod("readXML")]  // OK
         public static void ReadXml()
         {
             //XmlDocument xmlDoc = new XmlDocument();
@@ -24,20 +44,27 @@ namespace cadgrptools
             Document doc = Application.DocumentManager.MdiActiveDocument;
             Editor ed = doc.Editor;
 
+            int opt = 0;
+            string cmt = "";
+
             XmlTextReader xtr = new XmlTextReader("cadgrpproperties.xml");
             while (xtr.Read()) // read next node from the stream
             {
                 
                 if (xtr.NodeType == XmlNodeType.Element && xtr.Name == "Option")
                 {
-                    string s1 = xtr.ReadElementString(); // read a text only element
-                    ed.WriteMessage("\nOption = " + s1);
+                    opt = int.Parse(xtr.ReadElementString()); // read a text only element
+                    //ed.WriteMessage("\nOption = " + opt);
                 }
                 if (xtr.NodeType == XmlNodeType.Element && xtr.Name == "Comment")
                 {
-                    string s1 = xtr.ReadElementString();
-                    ed.WriteMessage("\nComment = " + s1);
+                    cmt = xtr.ReadElementString();
+                    //ed.WriteMessage("\nComment = " + cmt);
                 }
+
+                
+
+                /*
                 if (xtr.NodeType == XmlNodeType.Element && xtr.Name == "name")
                 {
                     string s1 = xtr.ReadElementString();
@@ -52,21 +79,46 @@ namespace cadgrptools
                 {
                     string s1 = xtr.ReadElementString();
                     ed.WriteMessage("\nResult = " + s1);
-                    ed.WriteMessage("\n");
-                    ed.WriteMessage("\n");
+                    //ed.WriteMessage("  "); // not work
+                    //ed.WriteMessage("\n");
 
                 }
+                */
             }
 
+            MulConfig mulOpt = new MulConfig(opt, cmt);
 
+            ed.WriteMessage("\nComment = " + mulOpt.comment);
 
 
         }
 
-        [CommandMethod("wrXML")]
+        [CommandMethod("wXML")]
         public static void WriteXml()
         {
-            XmlTextWriter xtw = null;
+            string fileName = "employee.xml";
+            XmlTextWriter xtw = new XmlTextWriter(fileName, System.Text.Encoding.UTF8);
+
+            xtw.Formatting = Formatting.Indented;
+
+            xtw.WriteStartDocument();
+
+            xtw.WriteComment("Creating xml file using c#");
+
+            xtw.WriteStartElement("Employees"); // root node
+
+            for (int i = 1; i <= 3; i++) // 3 sub nodes
+            {
+                xtw.WriteStartElement("Employee");
+                xtw.WriteElementString("name", "employee no_" + i);
+                xtw.WriteElementString("age", (i + 20).ToString());
+            }
+
+            xtw.WriteEndElement();
+            xtw.WriteEndDocument();
+            xtw.Flush();
+            xtw.Close();
+
         }
 
 
