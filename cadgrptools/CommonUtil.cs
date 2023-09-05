@@ -109,23 +109,27 @@ namespace CADDB
             }
         }
 
-
-        public static void SetDefaultColor(Database db, Color color)
+        public static ObjectIdCollection AddToModelSpace(Database db, params Entity[] ents)
         {
-            using (Transaction transaction = db.TransactionManager.StartTransaction())
+            ObjectIdCollection objIdCollect = new ObjectIdCollection();
+
+            using (Transaction tr = db.TransactionManager.StartTransaction())
             {
-                BlockTable blockTable = transaction.GetObject(db.BlockTableId, OpenMode.ForWrite) as BlockTable;
-                BlockTableRecord modelSpace = transaction.GetObject(blockTable[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+                BlockTable bt = tr.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
+                BlockTableRecord btr = tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
 
-                // Đặt màu mặc định là green (xanh)
-                db.Clayer = db.Clayer;
-                Color defaultColor = color; // Green color
+                foreach (var myEnt in ents)
+                {
+                    btr.AppendEntity(myEnt);
+                    tr.AddNewlyCreatedDBObject(myEnt, true);
+                    objIdCollect.Add(myEnt.Id); // Id or ObjectId ???
+                }
 
-                //modelSpace.color = defaultColor;
-
-                transaction.Commit();
+                tr.Commit();
+                return objIdCollect;
             }
         }
+
 
 
 

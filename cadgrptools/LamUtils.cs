@@ -158,9 +158,9 @@ namespace cadgrptools
 
             // 2 bounder line - mat dung
             Line line3 = new Line(pt1, pt3);
-            CommonUtil.AddToModelSpace(HostApplicationServices.WorkingDatabase, line3);
+            //CommonUtil.AddToModelSpace(HostApplicationServices.WorkingDatabase, line3);
             Line line4 = new Line(pt2, pt4);
-            CommonUtil.AddToModelSpace(HostApplicationServices.WorkingDatabase, line4);
+            CommonUtil.AddToModelSpace(HostApplicationServices.WorkingDatabase, line3, line4);
 
         }
 
@@ -196,9 +196,9 @@ namespace cadgrptools
 
             // 2 dau dam/mat bang
             Line line1 = new Line(pt1, pt3);
-            CommonUtil.AddToModelSpace(HostApplicationServices.WorkingDatabase, line1);
+            //CommonUtil.AddToModelSpace(HostApplicationServices.WorkingDatabase, line1);
             Line line2 = new Line(pt2, pt4);
-            CommonUtil.AddToModelSpace(HostApplicationServices.WorkingDatabase, line2);
+            CommonUtil.AddToModelSpace(HostApplicationServices.WorkingDatabase, line1, line2);
 
 
         }
