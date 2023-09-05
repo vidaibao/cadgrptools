@@ -35,7 +35,7 @@ namespace cadgrptools
         {
             
             int opt = 0;
-            string cmt = "";
+            string cmt = "", center = "", hidden = "";
 
             XmlTextReader xtr = new XmlTextReader("cadgrpproperties.xml");
             while (xtr.Read()) // read next node from the stream
@@ -43,18 +43,27 @@ namespace cadgrptools
 
                 if (xtr.NodeType == XmlNodeType.Element && xtr.Name == "Option")
                 {
-                    opt = int.Parse(xtr.ReadElementString()); // read a text only element
+                    opt = int.Parse(xtr.ReadElementString().Trim()); // read a text only element
                     //ed.WriteMessage("\nOption = " + opt);
                 }
                 if (xtr.NodeType == XmlNodeType.Element && xtr.Name == "Comment")
                 {
-                    cmt = xtr.ReadElementString();
+                    cmt = xtr.ReadElementString().Trim();
                     //ed.WriteMessage("\nComment = " + cmt);
                 }
-
+                if (xtr.NodeType == XmlNodeType.Element && xtr.Name == "center")
+                {
+                    center = xtr.ReadElementString().Trim();
+                }
+                if (xtr.NodeType == XmlNodeType.Element && xtr.Name == "hidden")
+                {
+                    hidden = xtr.ReadElementString().Trim();
+                }
             }
 
-            return new MulConfig(opt, cmt);
+
+            xtr.Close();
+            return new MulConfig(opt, cmt, center, hidden);
 
             
         }

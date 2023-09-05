@@ -86,7 +86,7 @@ namespace cadgrptools
                 */
             }
 
-            MulConfig mulOpt = new MulConfig(opt, cmt);
+            MulConfig mulOpt = new MulConfig(opt, cmt,"","");
 
             ed.WriteMessage("\nComment = " + mulOpt.comment);
 

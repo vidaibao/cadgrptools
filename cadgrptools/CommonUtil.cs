@@ -14,11 +14,16 @@ namespace CADDB
     {
         public int option { get;  }
         public string comment { get;  }
+        public string CenterType { get;  }
+        public string HiddenType { get;  }
 
-        public MulConfig(int option, string comment)
+        public MulConfig(int option, string comment, string centerType, string hiddenType)
         {
             this.option = option;
             this.comment = comment;
+            this.CenterType = centerType;
+            this.HiddenType = hiddenType;
+
         }
     }
 
@@ -55,14 +60,13 @@ namespace CADDB
 
 
 
-        public static void AddOffsetLine(Line baseLine, double offsetDistance, Color color, string lineType = "CONTINUOUS")
+        public static void AddOffsetLine(Line baseLine, double offsetDistance, string lineType = "CONTINUOUS")
         {
             foreach (Entity acEnt in baseLine.GetOffsetCurves(offsetDistance))
             {
                 Line offsetLine1 = (Line)acEnt;
                 offsetLine1.Linetype = lineType;
-                offsetLine1.Color = color;  // green
-
+                //offsetLine1.ColorIndex = 3;//green
                 AddToModelSpace(HostApplicationServices.WorkingDatabase, offsetLine1);
             }
         }
