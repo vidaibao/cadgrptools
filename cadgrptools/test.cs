@@ -16,6 +16,28 @@ namespace cadgrptools
 {
     public class test
     {
+        /*  If we know the name of the Layout (the text on the tab), we can
+            use GetBtrIDByLayoutName to get the corresponding BlockTableRecord, open it, and then draw to it*/
+        [CommandMethod("DrawOnLayout2")]
+        public void DrawOnLayout2()
+        {
+            ObjectId btrID = Utilities.GetBtrIDByLayoutName(HostApplicationServices.WorkingDatabase, "Layout2");
+            if (btrID != null)
+            {
+                using (Transaction tr = btrID.Database.TransactionManager.StartTransaction()) 
+                {
+                    BlockTableRecord myBTR = btrID.GetObject(OpenMode.ForWrite) as BlockTableRecord;
+                    Circle myCircle = new Circle(Point3d.Origin, Vector3d.ZAxis, 4);
+                    myBTR.AppendEntity(myCircle);
+                    tr.AddNewlyCreatedDBObject(myCircle, true);
+
+                    tr.Commit(); 
+                }
+            }
+        }
+
+
+
 
         [CommandMethod("mconfig")]  // not work cause .net 3.5 
         public static void ReadConfigurationFile()
