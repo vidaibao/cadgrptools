@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
@@ -23,9 +24,15 @@ namespace cadgrptools
             // set the color Green current with the CECOLOR system variable
             Application.SetSystemVariable("CECOLOR", "3"); //https://help.autodesk.com/view/OARX/2023/ENU/?guid=GUID-E50CC1AF-9448-4F30-9A2A-9142AB57163D
 
+
+            // Application.SetSystemVariable("CELTYPE", "Center");
+
             // Read properties
             //PropertyControl.MulWriteProperties();
             MulConfig mulConfig = XmlData.ReadXml();
+
+            //20230906 
+            CommonUtil.CheckLinetype(HostApplicationServices.WorkingDatabase, mulConfig.HiddenType);
 
             if (mulConfig.option != 1 &&  mulConfig.option != 3 && 
                 mulConfig.option != 21 && mulConfig.option != 22)
@@ -33,7 +40,7 @@ namespace cadgrptools
                 ed.WriteMessage("\nCould not get option value from cadgrpproperties.xml");
                 return;
             }
-            else
+            else 
             {
                 ed.WriteMessage($"\nOption default value is: {mulConfig.option}");
                 ed.WriteMessage($"\nOption description: {mulConfig.comment}");
@@ -43,33 +50,40 @@ namespace cadgrptools
             
             Point3d point1, point2;
             Get2Points(ed, ref point1, ref point2);
-            
 
-            // get profile of beam, gear from editor command prompt
-            string profile = Interaction.InputBox("Enter profile (format SH- 800X300 X16 X32 or 800X300x16x32)", "Profile");
-            
+            // TODO: Choose input from copy-paste or click on ModelSpace?
+            int res = CommonUtil.GetIntegerFromUser(doc, "\nYou can choose 1 or 2 to input profile format: SH- 800X300 X16 X32 or 800X300x16*32 \n(1 - Click on text profile; <2 - Enter or Paste profile>)  \n1 or 2 <2>: ");
+            string profile = "";
+            if (res == 1)
+            {
+                profile = CommonUtil.UserSelectText(doc);// chon 2 text thi sao?
+            }
+            else
+            {
+                profile = CommonUtil.GetStringFromUser(doc, "\nEnter profile (format: SH- 800X300 X16 X32 or 800X300x16*32)");
+            }
+
+
+            // get profile of beam, gear from dialog box MS VBasic
+            //string profile = Interaction.InputBox("Enter profile (format: SH- 800X300 X16 X32 or 800X300x16*32)", "Profile");
+
             // get HBtf    H-800X300 X16X32
             var HBtf = GetProfile(profile.Trim());
-            foreach (var i in HBtf)
+
+            if (!CheckProfile(HBtf))
             {
-                if (i <= 0)
-                {
-                    ed.WriteMessage($"\nHBtf = {i} >> Error");
-                    return;
-                }
-                ed.WriteMessage($"\n{i}");// check
+                return;
             }
-            //ed.WriteMessage($"\nmulConfig.HiddenType:  {mulConfig.HiddenType}");
+            
+            ed.WriteMessage("\nProfile: " + string.Join("x", HBtf.Select(x => x.ToString()).ToArray()));
 
             // draw BASE lines 
             Line baseLine = new Line(point1, point2);
-            //baseLine.Color = Color.FromRgb(0, 255, 0);  // green
             if (mulConfig.option == 1 || mulConfig.option == 3)
             {
                 CommonUtil.AddToModelSpace(HostApplicationServices.WorkingDatabase, baseLine);
             }
 
-            
             if (mulConfig.option == 1)
             {
                 Draw4MasterPlan(baseLine, HBtf);
@@ -95,10 +109,23 @@ namespace cadgrptools
 
 
 
-        
+
+        private static bool CheckProfile(int[] hBtf)
+        {
+            foreach (var i in hBtf)
+            {
+                if (i <= 0)
+                {
+                    //ed.WriteMessage($"\nHBtf = {i} >> Error");
+                    return false;
+                }
+            }
+            return true;
+        }
 
         private static void Draw4Detail(Line baseLine, int[] HBtf, string hiddenType)
         {
+
             // Mặt bằng dầm:
             // 2 đường dày bụng t type HIDDEN2 ;
             // 2 đường rộng cánh B type CONTINUOUS 
@@ -123,12 +150,6 @@ namespace cadgrptools
             Draw4EColumnInnerF(baseLine, HBtf);
 
             
-
-
-
-
-            // find a point with base point and vector
-
 
         }
 
@@ -160,7 +181,7 @@ namespace cadgrptools
             Line line3 = new Line(pt1, pt3);
             //CommonUtil.AddToModelSpace(HostApplicationServices.WorkingDatabase, line3);
             Line line4 = new Line(pt2, pt4);
-            CommonUtil.AddToModelSpace(HostApplicationServices.WorkingDatabase, line3, line4);
+            CommonUtil.AddToModelSpace(HostApplicationServices.WorkingDatabase, line3, line4);//20230906
 
         }
 
@@ -173,6 +194,7 @@ namespace cadgrptools
 
         private static void Draw4MasterPlan(Line baseLine, int[] HBtf)
         {
+
             // Offset the object B in the first direction
             double offsetDistance = HBtf[1] / 2;
             Point3d pt1, pt2, pt3, pt4;
@@ -198,7 +220,7 @@ namespace cadgrptools
             Line line1 = new Line(pt1, pt3);
             //CommonUtil.AddToModelSpace(HostApplicationServices.WorkingDatabase, line1);
             Line line2 = new Line(pt2, pt4);
-            CommonUtil.AddToModelSpace(HostApplicationServices.WorkingDatabase, line1, line2);
+            CommonUtil.AddToModelSpace(HostApplicationServices.WorkingDatabase, line1, line2);//20230906
 
 
         }
@@ -234,8 +256,9 @@ namespace cadgrptools
             for (int i = 0; i < HBtf.Length; i++)
                 HBtf[i] = 0;
             
+            s = s.Replace('*', 'X');
             s = s.Replace('x', 'X');
-            s = s.Replace(" ", ""); // 20230903
+            s = s.Replace(" ", string.Empty); // 20230903
             var temp1 = s.Split('-');
             if (temp1.Length == 1)  // 800X300X16X32
             {

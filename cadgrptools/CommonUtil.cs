@@ -16,6 +16,7 @@ namespace CADDB
         public string comment { get;  }
         public string CenterType { get;  }
         public string HiddenType { get;  }
+       
 
         public MulConfig(int option, string comment, string centerType, string hiddenType)
         {
@@ -23,12 +24,125 @@ namespace CADDB
             this.comment = comment;
             this.CenterType = centerType;
             this.HiddenType = hiddenType;
-
         }
     }
 
     public static class CommonUtil
     {
+
+
+
+
+
+        public static string UserSelectText(Document doc)
+        {
+            string res = "";
+            Editor editor = doc.Editor;
+            // Định dạng văn bản cần tìm kiếm
+            //string targetTextFormat = "800x300x16x32";
+
+            // Tạo một SelectionFilter để chọn Text
+            TypedValue[] filterList = new TypedValue[] {
+                new TypedValue((int)DxfCode.Start, "TEXT"),
+                //new TypedValue((int)DxfCode.Text, formatStr)
+            };
+            SelectionFilter filter = new SelectionFilter(filterList);
+            // Yêu cầu người dùng chọn Text có định dạng cụ thể
+            PromptSelectionResult selectionResult = editor.GetSelection(filter);
+            if (selectionResult.Status == PromptStatus.OK)
+            {
+                using (Transaction tr = doc.TransactionManager.StartTransaction())
+                {
+                    SelectionSet selectionSet = selectionResult.Value;
+                    foreach (ObjectId objectId in selectionSet.GetObjectIds())
+                    {
+                        DBText textEntity = tr.GetObject(objectId, OpenMode.ForRead) as DBText;
+                        if (textEntity != null)
+                        {
+                            // Xử lý TextEntity ở đây, ví dụ: hiển thị thông tin, thay đổi màu sắc, v.v.
+                            editor.WriteMessage($"\nText found: {textEntity.TextString}");
+                            res = textEntity.TextString;
+                        }
+                    }
+                    tr.Commit();
+                }
+            }
+            else
+            {
+                editor.WriteMessage("\nProfile not found!");
+            }
+
+            return res;
+        }
+
+
+
+
+
+        public static int GetIntegerFromUser(Document acDoc, string msg, int defaultValue = 2)
+        {
+            //acDoc = Application.DocumentManager.MdiActiveDocument;
+
+            PromptIntegerOptions pIntOpts = new PromptIntegerOptions("");
+            pIntOpts.Message = msg;
+
+            // Restrict input to positive and non-negative values
+            pIntOpts.AllowZero = false;
+            pIntOpts.AllowNegative = false;
+            pIntOpts.AllowNone = true;
+
+            // Get the value entered by the user
+            PromptIntegerResult pIntRes = acDoc.Editor.GetInteger(pIntOpts);
+
+            if (pIntRes.Status == PromptStatus.OK)
+            {
+                return pIntRes.Value;
+            }
+            else
+            {
+                return defaultValue;
+            }
+        }
+
+
+        public static string GetStringFromUser(Document acDoc, string promptUser)
+        {
+            //acDoc = Application.DocumentManager.MdiActiveDocument;
+
+            PromptStringOptions pStrOpts = new PromptStringOptions(promptUser);
+            pStrOpts.AllowSpaces = true;
+            PromptResult pStrRes = acDoc.Editor.GetString(pStrOpts);
+            if (pStrRes.Status == PromptStatus.OK)
+            {
+                return pStrRes.StringResult;
+            }
+            //Application.ShowAlertDialog("The name entered was: " + pStrRes.StringResult);
+            return "";
+        }
+
+
+
+
+        // 20230906
+        public static void CheckLinetype(Database db, string linetypeName)
+        {
+            using(Transaction tr = db.TransactionManager.StartTransaction())
+            {
+                // Open the Linetype table for read
+                LinetypeTable acLineTypTbl;
+                acLineTypTbl = tr.GetObject(db.LinetypeTableId, OpenMode.ForRead) as LinetypeTable;
+                
+                if (acLineTypTbl.Has(linetypeName) == false)
+                {
+                    // Load the *** Linetype
+                    db.LoadLineTypeFile(linetypeName, "acad.lin");
+                    // Set the *** linetype current
+                    //db.Celtype = acLineTypTbl[linetypeName];
+                }
+                tr.Commit();
+            }
+        }
+
 
 
 

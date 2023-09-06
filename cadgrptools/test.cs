@@ -16,6 +16,107 @@ namespace cadgrptools
 {
     public class test
     {
+
+        [CommandMethod("GetKeywordFromUser")]
+        public static void GetKeywordFromUser()
+        {
+            Document acDoc = Application.DocumentManager.MdiActiveDocument;
+
+            PromptKeywordOptions pKeyOpts = new PromptKeywordOptions("");
+            pKeyOpts.Message = "\nEnter an option ";
+            pKeyOpts.Keywords.Add("Line");
+            pKeyOpts.Keywords.Add("Circle");
+            pKeyOpts.Keywords.Add("Arc");
+            pKeyOpts.AllowNone = false;
+
+            PromptResult pKeyRes = acDoc.Editor.GetKeywords(pKeyOpts);
+
+            Application.ShowAlertDialog("Entered keyword: " +
+                                        pKeyRes.StringResult);
+        }
+
+        [CommandMethod("GetIntegerOrKeywordFromUser")]
+        public static void GetIntegerOrKeywordFromUser()
+        {
+            Document acDoc = Application.DocumentManager.MdiActiveDocument;
+
+            PromptIntegerOptions pIntOpts = new PromptIntegerOptions("");
+            pIntOpts.Message = "\nEnter the size or ";
+
+            // Restrict input to positive and non-negative values
+            pIntOpts.AllowZero = false;
+            pIntOpts.AllowNegative = false;
+
+            // Define the valid keywords and allow Enter
+            pIntOpts.Keywords.Add("Big");
+            pIntOpts.Keywords.Add("Small");
+            pIntOpts.Keywords.Add("Regular");
+            pIntOpts.Keywords.Default = "Regular";
+            pIntOpts.AllowNone = true;
+
+            // Get the value entered by the user
+            PromptIntegerResult pIntRes = acDoc.Editor.GetInteger(pIntOpts);
+
+            if (pIntRes.Status == PromptStatus.Keyword)
+            {
+                Application.ShowAlertDialog("Entered keyword: " +
+                                            pIntRes.StringResult);
+            }
+            else
+            {
+                Application.ShowAlertDialog("Entered value: " +
+                                            pIntRes.Value.ToString());
+            }
+        }
+
+
+
+
+
+
+        // TestAddToBlockDefinition
+        /*  two new Blocks are created (if they hadn’t already been defined) and three circles are drawn in ModelSpace.
+         *  Remember, ModelSpace and PaperSpace Layouts are BlockTableRecords just as a Block (Block Definition) is*/
+        [CommandMethod("TestAddEntity")]
+        public void TestAddEntity()
+        {
+            Circle myCircle = new Circle(Point3d.Origin, Vector3d.ZAxis,1.5);
+            Utilities.AddEntity(HostApplicationServices.WorkingDatabase, myCircle, "CircleBlock2");
+        }
+
+        [CommandMethod("TestAddEntities")]
+        public void TestAddEntities() 
+        {
+            DBObjectCollection myObjects = new DBObjectCollection();
+            myObjects.Add(new Circle(Point3d.Origin, Vector3d.ZAxis, 1));
+            myObjects.Add(new Circle(Point3d.Origin, Vector3d.ZAxis, 1.5));
+            myObjects.Add(new Circle(Point3d.Origin, Vector3d.ZAxis, 2));
+            Utilities.AddEntities(HostApplicationServices.WorkingDatabase, myObjects, "CircleBlock3");
+        }
+
+        [CommandMethod("TestAddEntities2")]
+        public void TestAddEntities2()
+        {
+            DBObjectCollection myObjects = new DBObjectCollection();
+            myObjects.Add(new Circle(Point3d.Origin, Vector3d.ZAxis, 1));
+            myObjects.Add(new Circle(Point3d.Origin, Vector3d.ZAxis, 1.5));
+            myObjects.Add(new Circle(Point3d.Origin, Vector3d.ZAxis, 2));
+            Utilities.AddEntities(HostApplicationServices.WorkingDatabase, myObjects, BlockTableRecord.ModelSpace);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         /*  If we know the name of the Layout (the text on the tab), we can
             use GetBtrIDByLayoutName to get the corresponding BlockTableRecord, open it, and then draw to it*/
         [CommandMethod("DrawOnLayout2")]

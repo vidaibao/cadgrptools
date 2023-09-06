@@ -37,7 +37,8 @@ namespace cadgrptools
             int opt = 0;
             string cmt = "", center = "", hidden = "";
 
-            XmlTextReader xtr = new XmlTextReader("cadgrpproperties.xml");
+            //XmlTextReader xtr = new XmlTextReader("cadgrpproperties.xml");
+            XmlTextReader xtr = new XmlTextReader("F:\\NAV\\com\\vidaibao\\learning\\csharp\\cadgrptools\\cadgrptools\\bin\\Debug\\cadgrpproperties.xml");
             while (xtr.Read()) // read next node from the stream
             {
 
