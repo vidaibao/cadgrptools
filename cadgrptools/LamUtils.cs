@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
@@ -14,6 +17,9 @@ namespace cadgrptools
 {
     public class LamUtils
     {
+        Dictionary<string, string> data = new Dictionary<string, string>();
+
+
         [CommandMethod("mul")]
         public static void Draw9lines()
         {
@@ -28,31 +34,38 @@ namespace cadgrptools
             // Application.SetSystemVariable("CELTYPE", "Center");
 
             // Read properties
-            //PropertyControl.MulWriteProperties();
-            MulConfig mulConfig = XmlData.ReadXml();
+            string filePath = ConfigFileRW.GetDLLFilePath("cadgrptoolconfig.txt");
+            Dictionary<string, string> configData = ConfigFileRW.ReadKeyValueFromFile(filePath);
+
+            // In ra màn hình để kiểm tra
+            foreach (var kvp in configData)
+            {
+                ed.WriteMessage($"\n{kvp.Key}: {kvp.Value}");
+            }
 
             //20230906 
-            CommonUtil.CheckLinetype(HostApplicationServices.WorkingDatabase, mulConfig.HiddenType);
-
-            if (mulConfig.option != 1 &&  mulConfig.option != 3 && 
-                mulConfig.option != 21 && mulConfig.option != 22)
+            CommonUtil.CheckLinetype(HostApplicationServices.WorkingDatabase, configData["hidden"]);
+            int configOption = int.Parse(configData["option"]);
+            if (configOption != 1 && configOption != 3 &&
+                configOption != 21 && configOption != 22)
             {
                 ed.WriteMessage("\nCould not get option value from cadgrpproperties.xml");
                 return;
             }
             else 
             {
-                ed.WriteMessage($"\nOption default value is: {mulConfig.option}");
-                ed.WriteMessage($"\nOption description: {mulConfig.comment}");
-            }
-            
+                ed.WriteMessage($"\nOption default value is: {configData["option"]}");
+                ed.WriteMessage($"\nOption description: {configData["desc"]}"); // sai dau ':' - Mat bang dam; 21-22 for E truc doc - Mat dung dam (21: canh 1 net; 22: 2 net); 3 for Detail - Mat dung va Mat bang
 
-            
+            }
+
+
+
             Point3d point1, point2;
             Get2Points(ed, ref point1, ref point2);
 
             // TODO: Choose input from copy-paste or click on ModelSpace?
-            int res = CommonUtil.GetIntegerFromUser(doc, "\nYou can choose 1 or 2 to input profile format: SH- 800X300 X16 X32 or 800X300x16*32 \n(1 - Click on text profile; <2 - Enter or Paste profile>)  \n1 or 2 <2>: ");
+            int res = CommonUtil.GetIntegerFromUser(doc, "\nChoose 1 or 2 to input profile format: SH- 800X300 X16 X32 or 800X300x16*32 \n(1 - Click on text profile; <2 - Enter or Paste profile>)  \n1 or 2 <2>: ");
             string profile = "";
             if (res == 1)
             {
@@ -79,27 +92,27 @@ namespace cadgrptools
 
             // draw BASE lines 
             Line baseLine = new Line(point1, point2);
-            if (mulConfig.option == 1 || mulConfig.option == 3)
+            if (configOption == 1 || configOption == 3)
             {
                 CommonUtil.AddToModelSpace(HostApplicationServices.WorkingDatabase, baseLine);
             }
 
-            if (mulConfig.option == 1)
+            if (configOption == 1)
             {
                 Draw4MasterPlan(baseLine, HBtf);
             }
-            else if (mulConfig.option == 21)
+            else if (configOption == 21)
             {
                 Draw4EColumn(baseLine, HBtf);
             }
-            else if (mulConfig.option == 22)
+            else if (configOption == 22)
             {
                 Draw4EColumn(baseLine, HBtf);
                 Draw4EColumnInnerF(baseLine, HBtf);
             }
-            else if (mulConfig.option == 3)
+            else if (configOption == 3)
             {
-                Draw4Detail(baseLine, HBtf, mulConfig.HiddenType);
+                Draw4Detail(baseLine, HBtf, configData["hidden"]);
             }
 
                        

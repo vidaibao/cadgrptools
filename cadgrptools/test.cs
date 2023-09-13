@@ -11,11 +11,74 @@ using System.Xml;
 
 using System.Configuration;
 using CADDB;
+using System.IO;
+using System.Reflection;
 
 namespace cadgrptools
 {
     public class test
     {
+
+        [CommandMethod("kv1")]
+        public static void TestReadWriteTextFile()
+        {
+            Document doc = Application.DocumentManager.MdiActiveDocument;
+            Editor ed = doc.Editor;
+
+            // Ví dụ về sử dụng hàm WriteKeyValueToFile
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("name", "John");
+            data.Add("age", "30");
+            data.Add("city", "New York");
+
+            string fileName = "cadgrptoolconfig.txt";
+
+            // Ghi dữ liệu vào tệp văn bản
+            //WriteKeyValueToFile(fileName, data);
+            //ed.WriteMessage("\nWrite data done");
+            //ed.WriteMessage(Directory.GetCurrentDirectory());
+
+            ed.WriteMessage("\n" + ConfigFileRW.GetDLLFilePath(fileName));
+            string filePath = ConfigFileRW.GetDLLFilePath(fileName);
+            // Đọc dữ liệu từ tệp văn bản
+            Dictionary<string, string> readData = ConfigFileRW.ReadKeyValueFromFile(filePath);
+
+            // In ra màn hình để kiểm tra
+            foreach (var kvp in readData)
+            {
+                ed.WriteMessage($"\n{kvp.Key}: {kvp.Value}");
+            }
+        }
+
+
+        
+
+        private static void WriteKeyValueToFile(string fileName, Dictionary<string, string> data)
+        {
+            //string directory = Directory.GetCurrentDirectory();
+            string directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\";
+            string filePath = Path.Combine(directory, fileName);
+
+            using (StreamWriter writer = new StreamWriter(filePath))
+            {
+                foreach (var kvp in data)
+                {
+                    writer.WriteLine($"{kvp.Key}: {kvp.Value}");
+                }
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
 
         [CommandMethod("GetKeywordFromUser")]
         public static void GetKeywordFromUser()

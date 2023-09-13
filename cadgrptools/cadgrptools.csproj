@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConfigFileRW.cs" />
     <Compile Include="LamUtils.cs" />
     <Compile Include="CommonUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -57,9 +58,6 @@
     <Compile Include="test.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="XmlData.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="cadgrpmulproperties.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
