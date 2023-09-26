@@ -19,6 +19,16 @@ namespace cadgrptools
     public class test
     {
 
+        [CommandMethod("sqa")]
+        public static void SQLiteAccess()
+        {
+            SQLiteAccess sqlite = new SQLiteAccess("cadgrp1.db");
+
+            sqlite.CreateDB();
+            sqlite.ReadData();
+
+        }
+
         [CommandMethod("kv1")]
         public static void TestReadWriteTextFile()
         {

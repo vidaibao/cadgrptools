@@ -46,8 +46,8 @@ namespace cadgrptools
             }
             catch (Exception ex)
             {
-
-                throw;
+                Console.WriteLine(ex.Message);
+                return null;
             }
 
         }
