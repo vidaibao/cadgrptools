@@ -1,8 +1,9 @@
-﻿using Autodesk.AutoCAD.ApplicationServices;
+﻿using Autodesk.AutoCAD.ApplicationServices ;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Runtime;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,18 +14,32 @@ using System.Configuration;
 using CADDB;
 using System.IO;
 using System.Reflection;
+using System.Windows;
+using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 
 namespace cadgrptools
 {
     public class test
     {
 
+        [CommandMethod("sqd")]
+        public static void SQLiteDapperAccess()
+        {
+            SQLiteDapper sQLiteDapper = new SQLiteDapper();
+            List<User> users = sQLiteDapper.GetAll().ToList();
+            users.ForEach(x => MessageBox.Show(x.Name));
+        }
+
+
+
+
+
         [CommandMethod("sqa")]
         public static void SQLiteAccess()
         {
             SQLiteAccess sqlite = new SQLiteAccess("cadgrp1.db");
 
-            sqlite.CreateDB();
+            //sqlite.CreateDB();
             sqlite.ReadData();
 
         }

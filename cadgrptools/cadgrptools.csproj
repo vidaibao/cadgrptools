@@ -72,6 +72,7 @@
     <Compile Include="XmlData.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="bin\Debug\cadgrp1.db" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -60,7 +60,16 @@ namespace cadgrptools
                     SQLiteCommand cmd = new SQLiteCommand(sql, sqlite);
                     cmd.ExecuteNonQuery();
 
-                    sql = "CREATE TABLE \"BeamProfile\" (\r\n\t\"id\"\tINTEGER NOT NULL UNIQUE,\r\n\t\"ProjectId\"\tINTEGER NOT NULL,\r\n\t\"Name\"\tTEXT NOT NULL,\r\n\t\"Branch\"\tINTEGER NOT NULL DEFAULT 1,\r\n\t\"Profile\"\tTEXT NOT NULL,\r\n\t\"RollWelded\"\tTEXT NOT NULL DEFAULT 'H',\r\n\t\"Material\"\tTEXT NOT NULL,\r\n\t\"Joinb\"\tTEXT NOT NULL,\r\n\t\"Created\"\tTEXT NOT NULL,\r\n\t\"Modified\"\tTEXT,\r\n\t\"Deleted\"\tTEXT,\r\n\t\"Note\"\tTEXT,\r\n\tPRIMARY KEY(\"id\" AUTOINCREMENT)\r\n)";
+                    sql = "CREATE TABLE BeamProfile (" +
+                        "id INTEGER NOT NULL UNIQUE," +
+                        "ProjectId INTEGER NOT NULL," +
+                        "Name TEXT NOT NULL," +
+                        "Branch INTEGER NOT NULL DEFAULT 1," +
+                        "Profile TEXT NOT NULL, " +
+                        "RollWelded TEXT NOT NULL DEFAULT 'H', " +
+                        "Material TEXT NOT NULL, Joinb TEXT NOT NULL, " +
+                        "Created TEXT NOT NULL, Modified TEXT, Deleted TEXT," +
+                        "Note TEXT, PRIMARY KEY(id AUTOINCREMENT))";
                     cmd = new SQLiteCommand(sql, sqlite);
                     cmd.ExecuteNonQuery();
                     return;

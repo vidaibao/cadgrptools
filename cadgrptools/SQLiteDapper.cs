@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Xml.Linq;
 using Dapper;
 
 namespace cadgrptools
@@ -14,7 +10,7 @@ namespace cadgrptools
     {
         User u = new User();
 
-        public static IEnumerable<User> GetAll()
+        public IEnumerable<User> GetAll()
         {
             var config = new SQLiteConnectionStringBuilder()
             {
@@ -23,7 +19,7 @@ namespace cadgrptools
             using (var connection = new SQLiteConnection(config.ToString()))
             {
                 connection.Open();
-                return connection.Query<User>(@"select * from user", null);
+                return connection.Query<User>(@"select * from user", u);
             }
         }
 
