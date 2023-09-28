@@ -26,7 +26,7 @@ namespace cadgrptools
 
         public override string ToString()
         {
-            return string.Format("ID={0}, Name={1}, Age={2}", u.ID, u.Name, u.Age);
+            return string.Format("ID={0}, Name={1}, Age={2}", u.UserID, u.Name, u.Age);
         }
 
 

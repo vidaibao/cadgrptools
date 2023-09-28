@@ -21,15 +21,15 @@ namespace cadgrptools
 {
     public class test
     {
-
+        /*
         [CommandMethod("sqd")]
         public static void SQLiteDapperAccess()
         {
             SQLiteDapper sQLiteDapper = new SQLiteDapper();
             List<User> users = sQLiteDapper.GetAll().ToList();
-            users.ForEach(x => MessageBox.Show(x.Name));
+            users.ForEach(x => MessageBox.Show(x.Name));//ok
         }
-
+        */
 
 
 

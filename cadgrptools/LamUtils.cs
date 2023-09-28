@@ -55,7 +55,8 @@ namespace cadgrptools
 
 
 
-            Point3d point1, point2;
+            Point3d point1 = new Point3d();
+            Point3d point2 = new Point3d();
             Get2Points(ed, ref point1, ref point2);
 
             // TODO: Choose input from copy-paste or click on ModelSpace?
@@ -164,7 +165,7 @@ namespace cadgrptools
         {
             // Mặt đứng dầm:
             // 2 đường ngoai cánh trên - dưới  f  type CONTINUOUS 
-            Point3d pt1, pt2, pt3, pt4;
+            Point3d pt1 = new Point3d(), pt2 = new Point3d(), pt3 = new Point3d(), pt4 = new Point3d();
             //CommonUtil.AddOffsetLine(baseLine, -(2500.0 + HBtf[1] / 2));
             foreach (Entity acEnt in baseLine.GetOffsetCurves(-(2500.0 + HBtf[1] / 2)))
             {
@@ -204,7 +205,7 @@ namespace cadgrptools
 
             // Offset the object B in the first direction
             double offsetDistance = HBtf[1] / 2;
-            Point3d pt1, pt2, pt3, pt4;
+            Point3d pt1 = new Point3d(), pt2 = new Point3d(), pt3 = new Point3d(), pt4 = new Point3d();
             foreach (Entity acEnt in baseLine.GetOffsetCurves(offsetDistance))
             {
                 Line offsetLine1 = (Line)acEnt;

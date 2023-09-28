@@ -5,7 +5,12 @@ VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cadgrptools", "cadgrptools\cadgrptools.csproj", "{411525EF-9C61-4988-A867-F3FB81839C94}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSonDI", "JSonDI\JSonDI.csproj", "{2A840469-0316-49EC-BE72-B65DE35B9058}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSonDI", "JSonDI\JSonDI.csproj", "{2A840469-0316-49EC-BE72-B65DE35B9058}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8B4DBAF1-6624-4D08-A026-87408E7F7695}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

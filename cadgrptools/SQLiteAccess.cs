@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Windows;
 
 namespace cadgrptools
@@ -41,7 +38,7 @@ namespace cadgrptools
             while (reader.Read())
             {//20230926
                 //dataGridView1.Rows.Insert(0, reader.GetString(0), reader.GetString(1));
-                string s = string.Concat(reader.GetInt32(0).ToString(), reader.GetString(1));
+                string s = string.Concat(reader.GetInt32(0).ToString(), reader.GetString(1), reader.GetString(2));
                 MessageBox.Show(s);
             }
         }
@@ -76,6 +73,35 @@ namespace cadgrptools
                 }
             }
             Console.WriteLine("Database can not create!");
+        }
+
+
+
+        public void InsertRecord(string sql)
+        {
+            var conn = new SQLiteConnection(cs);
+            conn.Open();
+            var cmd = new SQLiteCommand(conn);
+
+            try
+            {
+
+                cmd.CommandText = sql;// "insert into test (name,id) values (@name, @id)";
+                //cmd.Parameters.AddWithValue("@name", name_txt.Text);
+                //cmd.Parameters.AddWithValue("@id", id_txt.Text);
+                /*
+                dataGridView1.ColumnCount = 2;
+                dataGridView1.Columns[0].Name = "Name";
+                dataGridView1.Columns[1].Name = "Id";
+                string[] row = new string[] { name_txt.Text, id_txt.Text };
+                dataGridView1.Rows.Add(row);
+                */
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
 
