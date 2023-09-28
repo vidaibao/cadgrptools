@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
@@ -11,8 +13,8 @@ namespace cadgrptools
 {
     public class LamUtils
     {
-        Dictionary<string, string> data = new Dictionary<string, string>();
-
+        //Dictionary<string, string> data = new Dictionary<string, string>();
+        
 
         [CommandMethod("mul")]
         public static void Draw9lines()
@@ -28,18 +30,15 @@ namespace cadgrptools
             // Application.SetSystemVariable("CELTYPE", "Center");
 
             // Read properties
-            string filePath = ConfigFileRW.GetDLLFilePath("cadgrptoolconfig.txt");
-            Dictionary<string, string> configData = ConfigFileRW.ReadKeyValueFromFile(filePath);
-
-            // In ra màn hình để kiểm tra
-            foreach (var kvp in configData)
-            {
-                ed.WriteMessage($"\n{kvp.Key}: {kvp.Value}");
-            }
-
+            string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\cadgrptools.dll.config";
+            AppConfigReader acr = new AppConfigReader(path);
+            string optionMul = acr.ReadAppSetting("option");
+            string ltype = acr.ReadAppSetting("ltypehidden");
+            string desc = acr.ReadAppSetting("comment");
+            
             //20230906 
-            CommonUtil.CheckLinetype(HostApplicationServices.WorkingDatabase, configData["hidden"]);
-            int configOption = int.Parse(configData["option"]);
+            CommonUtil.CheckLinetype(HostApplicationServices.WorkingDatabase, ltype);
+            int configOption = int.Parse(optionMul);
             if (configOption != 1 && configOption != 3 &&
                 configOption != 21 && configOption != 22)
             {
@@ -48,8 +47,8 @@ namespace cadgrptools
             }
             else 
             {
-                ed.WriteMessage($"\nOption default value is: {configData["option"]}");
-                ed.WriteMessage($"\nOption description: {configData["desc"]}"); // sai dau ':' - Mat bang dam; 21-22 for E truc doc - Mat dung dam (21: canh 1 net; 22: 2 net); 3 for Detail - Mat dung va Mat bang
+                ed.WriteMessage($"\nOption default value is: {ltype}");
+                ed.WriteMessage($"\nOption description: {ltype}"); // sai dau ':' - Mat bang dam; 21-22 for E truc doc - Mat dung dam (21: canh 1 net; 22: 2 net); 3 for Detail - Mat dung va Mat bang
 
             }
 
@@ -89,6 +88,7 @@ namespace cadgrptools
             Line baseLine = new Line(point1, point2);
             if (configOption == 1 || configOption == 3)
             {
+                baseLine.Linetype = ltype;
                 CommonUtil.AddToModelSpace(HostApplicationServices.WorkingDatabase, baseLine);
             }
 
@@ -107,7 +107,7 @@ namespace cadgrptools
             }
             else if (configOption == 3)
             {
-                Draw4Detail(baseLine, HBtf, configData["hidden"]);
+                Draw4Detail(baseLine, HBtf, ltype);
             }
 
                        
@@ -118,7 +118,7 @@ namespace cadgrptools
 
 
 
-        private static bool CheckProfile(int[] hBtf)
+        private static bool CheckProfile(double[] hBtf)
         {
             foreach (var i in hBtf)
             {
@@ -131,7 +131,7 @@ namespace cadgrptools
             return true;
         }
 
-        private static void Draw4Detail(Line baseLine, int[] HBtf, string hiddenType)
+        private static void Draw4Detail(Line baseLine, double[] HBtf, string hiddenType)
         {
 
             // Mặt bằng dầm:
@@ -161,7 +161,7 @@ namespace cadgrptools
 
         }
 
-        private static void Draw4EColumn(Line baseLine, int[] HBtf)
+        private static void Draw4EColumn(Line baseLine, double[] HBtf)
         {
             // Mặt đứng dầm:
             // 2 đường ngoai cánh trên - dưới  f  type CONTINUOUS 
@@ -193,14 +193,14 @@ namespace cadgrptools
 
         }
 
-        private static void Draw4EColumnInnerF(Line baseLine, int[] HBtf)
+        private static void Draw4EColumnInnerF(Line baseLine, double[] HBtf)
         {
             CommonUtil.AddOffsetLine(baseLine, -(2500.0 + HBtf[3] + HBtf[1] / 2));
 
             CommonUtil.AddOffsetLine(baseLine, -(2500.0 + HBtf[0] - HBtf[3] + HBtf[1] / 2));
         }
 
-        private static void Draw4MasterPlan(Line baseLine, int[] HBtf)
+        private static void Draw4MasterPlan(Line baseLine, double[] HBtf)
         {
 
             // Offset the object B in the first direction
@@ -258,9 +258,9 @@ namespace cadgrptools
 
 
         // s  SH-800X300X16X32
-        static int[] GetProfile(string s)
+        static double[] GetProfile(string s)
         {
-            int[] HBtf = new int[4];
+            double[] HBtf = new double[4];
             for (int i = 0; i < HBtf.Length; i++)
                 HBtf[i] = 0;
             
@@ -275,10 +275,10 @@ namespace cadgrptools
                 {
                     return HBtf;
                 }
-                HBtf[0] = int.Parse(temp2[0]);
-                HBtf[1] = int.Parse(temp2[1]);
-                HBtf[2] = int.Parse(temp2[2]);
-                HBtf[3] = int.Parse(temp2[3]);
+                HBtf[0] = double.Parse(temp2[0]);
+                HBtf[1] = double.Parse(temp2[1]);
+                HBtf[2] = double.Parse(temp2[2]);
+                HBtf[3] = double.Parse(temp2[3]);
             }
             else if (temp1.Length == 2) // SH-800X300X16X32
             {
@@ -287,10 +287,10 @@ namespace cadgrptools
                 {
                     return HBtf;
                 }
-                HBtf[0] = int.Parse(temp2[0]);
-                HBtf[1] = int.Parse(temp2[1]);
-                HBtf[2] = int.Parse(temp2[2]);
-                HBtf[3] = int.Parse(temp2[3]);
+                HBtf[0] = double.Parse(temp2[0]);
+                HBtf[1] = double.Parse(temp2[1]);
+                HBtf[2] = double.Parse(temp2[2]);
+                HBtf[3] = double.Parse(temp2[3]);
             }
 
             return HBtf;

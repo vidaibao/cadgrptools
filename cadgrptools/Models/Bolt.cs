@@ -6,11 +6,7 @@ using System.Threading.Tasks;
 
 namespace cadgrptools.Models
 {
-    public class Project
+    public class Bolt
     {
-        public int Id { get; set; }
-        public string ShortName { get; set; }
-        public string LongName { get; set; }
-
     }
 }

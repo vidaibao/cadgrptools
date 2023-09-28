@@ -21,7 +21,7 @@ namespace cadgrptools.DataServices
         {
             foreach (var user in _context.Users)
             {
-                if (user.UserID == id) return user;
+                if (user.Id == id) return user;
             }
             return null;
         }
@@ -45,8 +45,8 @@ namespace cadgrptools.DataServices
         public void Insert(User user)
         {
             var lastIndex = _context.Users.Count - 1;
-            var id = lastIndex < 0 ? 1 : _context.Users[lastIndex].UserID + 1;
-            user.UserID = id;
+            var id = lastIndex < 0 ? 1 : _context.Users[lastIndex].Id + 1;
+            user.Id = id;
             _context.Users.Add(user);
         }
 
