@@ -16,11 +16,82 @@ using System.IO;
 using System.Reflection;
 using System.Windows;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
+using Autodesk.AutoCAD.Colors;
 
 namespace cadgrptools
 {
     public class test
     {
+
+        [CommandMethod("adwg")]
+        public static void DwgAccess()
+        {
+            Database myDB = new Database(false, true);
+            string pathDB = @"F:\NAV\com\vidaibao\learning\database\cadgrpDB.dwg";
+            //Set the output Drawing Directory
+            Document acDoc = Application.DocumentManager.MdiActiveDocument;
+            string strDWGName = acDoc.Name;
+            strDWGName = @"F:\NAV\com\vidaibao\learning\database\Output.dwg";
+
+            myDB.ReadDwgFile(pathDB, FileOpenMode.OpenForReadAndAllShare, false, null);
+
+
+            using (Transaction tr = myDB.TransactionManager.StartTransaction())
+            {
+                // check if a layer named "Character" already exists and create it if not
+                string layerName = "Character";
+                ObjectId layerId;
+                var layerTable = (LayerTable)tr.GetObject(myDB.LayerTableId, OpenMode.ForRead);
+                if (layerTable.Has(layerName))
+                {
+                    layerId = layerTable[layerName];
+                }
+                else
+                {
+                    tr.GetObject(myDB.LayerTableId, OpenMode.ForWrite);
+                    var layer = new LayerTableRecord
+                    {
+                        Name = layerName,
+                        Color = Color.FromRgb(200, 30, 80)
+                    };
+                    layerId = layerTable.Add(layer);
+                    tr.AddNewlyCreatedDBObject(layer, true);
+                }
+
+                // get the Model space
+                var modelSpace = (BlockTableRecord)tr.GetObject(
+                    SymbolUtilityServices.GetBlockModelSpaceId(myDB), OpenMode.ForWrite);
+
+                // create a text
+                var text = new DBText
+                {
+                    Position = new Point3d(2.0, 2.0, 0.0),
+                    LayerId = layerId,
+                    Height = 500.0,
+                    TextString = "Hello, World."
+                };
+                modelSpace.AppendEntity(text);
+                tr.AddNewlyCreatedDBObject(text, true);
+
+                // save changes to the database
+                tr.Commit();
+            }
+
+            // save the new drawing
+            myDB.SaveAs(strDWGName, DwgVersion.Current);
+
+
+            myDB.Dispose();
+
+            
+
+        }
+
+
+
+
+
+
         /*
         [CommandMethod("sqd")]
         public static void SQLiteDapperAccess()

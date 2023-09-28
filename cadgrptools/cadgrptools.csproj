@@ -82,7 +82,6 @@
   <ItemGroup>
     <Compile Include="AppConfigReader.cs" />
     <Compile Include="AppConfiguration.cs" />
-    <Compile Include="AppConnection.cs" />
     <Compile Include="ConfigFileRW.cs" />
     <Compile Include="DataServices\IRepository.cs" />
     <Compile Include="DataServices\Repository.cs" />
